@@ -20,6 +20,7 @@ class Game:
             'K': pygame.image.load('images/white_king.png').convert_alpha(),
         }
         self.moving = False
+        self.last_move = None
 
     def show_background(self, screen):
         # draw squares on board
@@ -28,6 +29,22 @@ class Game:
                 color = LIGHT_SQUARE if (row+col) % 2 == 0 else DARK_SQUARE
                 rect = (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
                 pygame.draw.rect(screen, color, rect)
+
+    def show_last_move(self, screen):
+        if not self.last_move:
+            return
+        from_square, to_square = self.last_move.from_square, self.last_move.to_square
+
+        from_row, from_col = 7 - from_square//8, from_square % 8
+        from_color = LIGHT_TRACE if (from_row+from_col) % 2 == 0 else DARK_TRACE
+        from_rect = (from_col * SQUARE_SIZE, from_row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+        pygame.draw.rect(screen, from_color, from_rect)
+
+        to_row, to_col = 7 - to_square//8, to_square % 8
+        to_color = LIGHT_TRACE if (to_row+to_col) % 2 == 0 else DARK_TRACE
+        to_rect = (to_col * SQUARE_SIZE, to_row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE)
+        pygame.draw.rect(screen, to_color, to_rect)
+
 
     def show_pieces(self, screen, board):
         # draw pieces on board

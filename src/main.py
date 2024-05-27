@@ -4,7 +4,8 @@ import math
 
 from const import *
 from game import Game
-from agents import random_agent
+from agents.random_agent import RandomAgent
+from agents.simple_minmax_agent import SimpleMinMaxAgent
 
 class Main:
     def __init__(self):
@@ -22,14 +23,16 @@ class Main:
 
         while self.status:
             game.show_background(screen)
+            game.show_last_move(screen)
             if game.moving:
                 game.show_valid_moves(screen, valid_moves)
             game.show_pieces(screen, board)
 
             # check if AI's turn:
             if board.turn == chess.BLACK:
-                agent_move = agent(board)
+                agent_move = agent.generate_move(board)
                 if agent_move:
+                    game.last_move = agent_move
                     board.push(agent_move)
                 else:
                     game.show_game_over(screen, 'White')
@@ -52,11 +55,10 @@ class Main:
                     square = (7 - board_pos[1]) * 8 + board_pos[0]
 
                     # show valid moves 
-                    if not game.moving:
-                        if board.piece_at(square):
-                            valid_moves = [m for m in all_moves if m.from_square == square]
-                            game.show_valid_moves(screen, valid_moves)
-                            game.moving = True
+                    if board.piece_at(square) and board.color_at(square) == True:
+                        valid_moves = [m for m in all_moves if m.from_square == square]
+                        game.show_valid_moves(screen, valid_moves)
+                        game.moving = True
                     # moving a piece
                     else:
                         i = 0
@@ -68,6 +70,7 @@ class Main:
                         if i == len(valid_moves):
                             continue
                         board.push(move)
+                        game.last_move = move
                         square = None
                         game.moving = False
             pygame.display.update()
@@ -75,4 +78,5 @@ class Main:
         pygame.quit()
 
 main = Main()
-main.mainloop(random_agent)
+agent = SimpleMinMaxAgent()
+main.mainloop(agent)
