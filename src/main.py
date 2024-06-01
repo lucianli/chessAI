@@ -3,9 +3,10 @@ import chess
 import math
 
 from const import *
+from load import Load
 from game import Game
-from agents.random_agent import RandomAgent
 from agents.simple_minmax_agent import SimpleMinMaxAgent
+from agents.minmax_agent import MinMaxAgent
 
 class Main:
     def __init__(self):
@@ -15,11 +16,22 @@ class Main:
         self.status = True
         self.board = chess.Board()
         self.game = Game()
+        self.loader = Load(self.screen)
 
-    def mainloop(self, agent):
+    def play(self):
         game = self.game
         screen = self.screen
         board = self.board
+
+        game_mode = self.loader.show_load_screen()
+        if game_mode == "Easy":
+            agent = SimpleMinMaxAgent(MAX_DEPTH_EASY)
+        elif game_mode == "Medium":
+            agent = SimpleMinMaxAgent(MAX_DEPTH_MEDIUM)
+        elif game_mode == "Hard":
+            agent = MinMaxAgent(MAX_DEPTH_HARD)
+        else:
+            return
 
         while self.status:
             game.show_background(screen)
@@ -78,5 +90,4 @@ class Main:
         pygame.quit()
 
 main = Main()
-agent = SimpleMinMaxAgent()
-main.mainloop(agent)
+main.play()
